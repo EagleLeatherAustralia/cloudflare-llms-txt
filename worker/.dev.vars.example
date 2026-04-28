@@ -1,0 +1,25 @@
+# Copy this file to .dev.vars and fill in the values.
+# .dev.vars is gitignored — never commit it. Wrangler reads it automatically
+# during `wrangler dev` and exposes each line as `env.<KEY>` to the Worker.
+#
+# For production, `npm run deploy` syncs each key below to the Worker via
+# `wrangler secret put` — no manual secret management required.
+#
+# Note on naming: avoid `CF_*` and `CLOUDFLARE_*` prefixes for binding names.
+# The wrangler CLI treats env vars matching those prefixes as its own auth
+# credentials, which causes deprecation warnings and silent auth conflicts
+# when the script sources this file.
+
+# Origin the Worker proxies /llms-full.txt from. Trailing slash required.
+FEED_BASE="https://admin.example.com/media/feeds/"
+
+# Cloudflare API token with Zone:Cache Purge permission for your zone.
+# Create at https://dash.cloudflare.com/profile/api-tokens
+PURGE_API_TOKEN=""
+
+# Zone ID for your domain. Copy from the Cloudflare dashboard sidebar.
+PURGE_ZONE_ID=""
+
+# Shared secret for the cache-purge endpoint. Any random string is fine for
+# local dev; production rotates this on every deploy.
+REFRESH_TOKEN="local-dev-token"

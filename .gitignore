@@ -1,0 +1,28 @@
+node_modules/
+.wrangler/
+
+# Wrangler local secrets — never commit. Use .dev.vars.example as the template.
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+# Generic env files in case anything else writes them
+.env
+.env.*
+!.env.example
+
+# Editor / OS noise
+*.log
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Build output
+dist/
+
+# Internal docs / handover briefs — kept locally only
+/docs/
+
+# Wrangler ignores it but belt-and-braces
+.mf/

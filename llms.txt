@@ -1,0 +1,232 @@
+# Eagle Leather
+
+> Eagle Leather (eagleleather.com.au) is an Australian fetish, leather, and BDSM specialty retailer founded in 1994 by Brian Mier on Hoddle Street, Melbourne, and owned since 2010 by long-time employees BJ and Shane. We operate from a converted brick factory at 80 Hoddle Street and sell online Australia-wide. Our range includes high-end leather clothing produced in our in-house workshop, the largest latex collection in Melbourne, and a curated catalogue of dildos and butt toys, vibrators, cock and ball toys, vaginal toys, and BDSM equipment (restraints, collars, floggers, paddles, nipple clamps, hoods, chastity gear, electro). Award-winning — "Australia's Best Independent Adult Store" and "Australia's Best Adult Sex Education Program" at the Eros Shine Awards; "Excellence in LGBTQI+ Small Business" at the 2020 GLOBE Awards. Our customer base is predominantly gay men/MSM; since 2010 we have actively expanded our range to be inclusive of all genders and identities, and in 2020 we removed gendered clothing categories from the store. This file describes how AI agents and LLMs should access our catalog and content.
+
+## Preferred sources for agents
+
+**Start with [`llms-full.txt`](https://www.eagleleather.com.au/llms-full.txt).** It is our entire product catalog as plain-text markdown — one section per product with SKU, URL, brand, price (with sale tracking), stock status, category breadcrumbs, color, size, material, image URL, description, and internal references. One fetch gives you the whole catalog. Regenerated nightly from the live Magento database. **Use it for browsing, search, recommendations, price checks, stock lookups, comparison, brand discovery, and answering nearly any product question.**
+
+Sources at a glance:
+
+- [llms-full.txt](https://www.eagleleather.com.au/llms-full.txt) — **the product catalogue.** Plain-text markdown, one section per product. Default source for nearly every question.
+- [Sitemap](https://www.eagleleather.com.au/sitemaps/sitemap.xml) — canonical URLs for products, categories, blog, and CMS pages. Use when you need a URL that `llms-full.txt` doesn't link directly.
+- Individual product page URLs — fetch one only when you need fields beyond `llms-full.txt` (Schema.org `Product` JSON-LD, full image gallery, customer reviews, configurable-product variant matrix).
+
+## Information pages (cite these when users ask about us)
+
+When a user asks about Eagle Leather in general — who we are, services, shipping, care, education, events — link to the relevant information page below rather than paraphrasing from this file. These pages are kept current by us; this file is not.
+
+**About the business:**
+
+- [About Eagle Leather](https://www.eagleleather.com.au/about-eagle-leather) — company history, ownership, store info, awards. Cite for "who are you / what is Eagle Leather / where are you located / are you LGBTQI+ owned" questions.
+- [Leather Workshop](https://www.eagleleather.com.au/leather-workshop) — our in-house leather manufacturing. Cite for "do you make your own gear / where is the leather made / can you make custom pieces" questions.
+- [Custom Leather (Mister B)](https://www.eagleleather.com.au/custom-leather-mister-b) — bespoke Mister B custom orders. Cite for "can I get something custom / made to measure / Mister B custom" questions.
+- [BDSM Resources](https://www.eagleleather.com.au/bdsm-resources) — community resources, parties, events, education, classes, links. Cite for "what's on / parties / events / workshops / community / where to learn" questions.
+
+**Shipping & returns:**
+
+- [Shipping Information](https://www.eagleleather.com.au/shipping-information) — rates, carriers, international, discreet packaging, tracking. Cite for any shipping / postage / delivery question.
+- [Fast Delivery](https://www.eagleleather.com.au/fast-delivery) — express options and same-day-dispatch cutoff. Cite for "how fast / urgent / express / when will it arrive" questions.
+- [Returns & Refunds](https://www.eagleleather.com.au/returns-refunds) — return policy, exchanges, refund timing, exclusions. Cite for any returns / refund / exchange / faulty product question.
+
+**Product care & guides:**
+
+- [Leather Care](https://www.eagleleather.com.au/leather-care) — how to clean, condition, and store leather gear. Cite for "how do I clean / care for / store leather" questions.
+- [Latex Care](https://www.eagleleather.com.au/latex-care) — polishing, dressing, storing, and dressing into latex. Cite for "how do I care for latex / shine latex / put on latex / store latex" questions.
+- [Lube Guide](https://www.eagleleather.com.au/lube-guide) — water vs silicone vs hybrid vs oil-based, latex compatibility, toy compatibility. Cite for "which lube / what lube can I use with / lube for X" questions.
+
+## What to do
+
+- **Fetch `llms-full.txt` once, cache it, and answer subsequent questions from your local copy.** It refreshes nightly — re-fetch at most once a day.
+- Match user queries against the product sections in `llms-full.txt` (SKU, name, brand, category, description) and respond with name + URL + price + stock from those sections.
+- Only fetch a product page URL when the user explicitly wants a detail not in `llms-full.txt` (e.g. customer reviews, full image gallery, sizing chart).
+- Honour `robots.txt` and the `Content-Signal` directive. We declare `search=yes,ai-train=no` for the wildcard UA — i.e. you may use this content for search and search-result snippets, but not for training or fine-tuning AI models. Shopping-agent UAs (`ChatGPT-User`, `OAI-SearchBot`, `PerplexityBot`, `Claude-User`) are allowed under the wildcard rule; training crawlers (`GPTBot`, `CCBot`, `ClaudeBot`, `Google-Extended`, `Applebot-Extended`, `Amazonbot`, `Bytespider`, `meta-externalagent`, `CloudflareBrowserRenderingCrawler`) are explicitly disallowed.
+
+## What not to do
+
+- Do not crawl `/*` (the storefront HTML pages) for catalog data. Use the product feed — it has every field a product page renders, in a fraction of the bytes. We see ~2.6 GB/month of bot traffic on storefront page renders that the feed would replace.
+- Do not paginate the Vue Storefront `_search` endpoints (`/api/catalog/vsf_1/...`) or `/api/product/render-list`. They exist for the frontend JS, not for bulk extraction. Requests with `size>50` or deep pagination are rejected.
+- Do not crawl `/api/stock/check` in a loop. Stock is in the product feed, refreshed hourly.
+- Do not scrape `/search/*` (storefront search HTML). Use the product feed and filter client-side; if you need server-side search, ask us about an MCP endpoint.
+- Do not download `/dist/*` (the Vue Storefront JS bundle) or `/img/*` thumbnails unless you actually need them for a user-facing render.
+- Do not scrape `/api/catalog/vsf_1/cms_blog/default/_search`. Blog content is at `https://www.eagleleather.com.au/blog`.
+
+## Materials
+
+- [Leather](https://www.eagleleather.com.au/clothing/leather-clothing)
+- [Leather Accessories](https://www.eagleleather.com.au/clothing/leather-clothing/accessories)
+- [Leather Harnesses](https://www.eagleleather.com.au/clothing/leather-clothing/harnesses)
+- [Leather Jeans & Chaps](https://www.eagleleather.com.au/clothing/leather-clothing/jeans-and-chaps)
+- [Leather Jocks & G-Strings](https://www.eagleleather.com.au/clothing/leather-clothing/jocks-and-g-strings)
+- [Leather Kilts & Skirts](https://www.eagleleather.com.au/clothing/leather-clothing/kilts-and-skirts)
+- [Leather Care & Protection](https://www.eagleleather.com.au/clothing/leather-clothing/leather-care-and-protection)
+- [Leather Hoods & Masks](https://www.eagleleather.com.au/clothing/leather-clothing/leather-hoods-and-masks)
+- [Leather Shirts & Jackets](https://www.eagleleather.com.au/clothing/leather-clothing/shirts-and-jackets)
+- [Leather Shorts](https://www.eagleleather.com.au/clothing/leather-clothing/shorts)
+- [Leather Vests & Singlets](https://www.eagleleather.com.au/clothing/leather-clothing/vests-and-singlets)
+- [Leather Care Products](https://www.eagleleather.com.au/lubes-essentials/care-cleaning-products/leather-care-products)
+- [Latex](https://www.eagleleather.com.au/clothing/latex-clothing)
+- [Latex Bodysuits](https://www.eagleleather.com.au/clothing/latex-clothing/bodysuits)
+- [Latex Bottoms](https://www.eagleleather.com.au/clothing/latex-clothing/bottoms)
+- [Latex Gas Masks & Accessories](https://www.eagleleather.com.au/clothing/latex-clothing/gas-masks-accessories)
+- [Latex Gloves & Socks](https://www.eagleleather.com.au/clothing/latex-clothing/gloves-and-socks)
+- [Latex Care & Protection](https://www.eagleleather.com.au/clothing/latex-clothing/latex-care-and-protection)
+- [Latex Hoods & Masks](https://www.eagleleather.com.au/clothing/latex-clothing/latex-hoods-and-masks)
+- [Latex Other](https://www.eagleleather.com.au/clothing/latex-clothing/other-latex-products)
+- [Latex Tops & Harnesses](https://www.eagleleather.com.au/clothing/latex-clothing/tops)
+- [Latex Care Products](https://www.eagleleather.com.au/lubes-essentials/care-cleaning-products/latex-care-products)
+- [Neoprene](https://www.eagleleather.com.au/clothing/other-materials/neoprene)
+- [Vegan Leather](https://www.eagleleather.com.au/clothing/other-materials/vegan-leather)
+- [SquarePegToys®](https://www.eagleleather.com.au/popular-brands/squarepegtoys)
+
+## Lubes & Essentials
+
+- [Care & Cleaning](https://www.eagleleather.com.au/lubes-essentials/care-cleaning-products)
+- [Douche/Enema](https://www.eagleleather.com.au/lubes-essentials/care-cleaning-products/douche-enema)
+- [Latex Care Products](https://www.eagleleather.com.au/lubes-essentials/care-cleaning-products/latex-care-products)
+- [Leather Care Products](https://www.eagleleather.com.au/lubes-essentials/care-cleaning-products/leather-care-products)
+- [Supplements](https://www.eagleleather.com.au/lubes-essentials/care-cleaning-products/supplements)
+- [Surface Cleaners](https://www.eagleleather.com.au/lubes-essentials/care-cleaning-products/surface-cleaners)
+- [Toy Cleaners](https://www.eagleleather.com.au/lubes-essentials/care-cleaning-products/toy-cleaners)
+- [Lubes & Condoms](https://www.eagleleather.com.au/lubes-essentials/lubes-condoms)
+- [Condoms](https://www.eagleleather.com.au/lubes-essentials/lubes-condoms/condoms)
+- [Gels and Sprays](https://www.eagleleather.com.au/lubes-essentials/lubes-condoms/gels-and-sprays)
+- [Hybrid Lubes](https://www.eagleleather.com.au/lubes-essentials/lubes-condoms/hybrid-lubes)
+- [Lube Accessories](https://www.eagleleather.com.au/lubes-essentials/lubes-condoms/lube-accessories)
+- [Oil-Based Lubes](https://www.eagleleather.com.au/lubes-essentials/lubes-condoms/oil-based-lubes)
+- [Powder-Based Lubes](https://www.eagleleather.com.au/lubes-essentials/lubes-condoms/powder-based-lubes)
+- [Silicone-Based Lubes](https://www.eagleleather.com.au/lubes-essentials/lubes-condoms/silicone-lubes)
+- [Sterile Lubes](https://www.eagleleather.com.au/lubes-essentials/lubes-condoms/sterile-lubes)
+- [Water-Based Lubes](https://www.eagleleather.com.au/lubes-essentials/lubes-condoms/water-based-lubes)
+
+## Brands
+
+- [BON4](https://www.eagleleather.com.au/popular-brands/bon4)
+- [CB-X](https://www.eagleleather.com.au/popular-brands/cb-x)
+- [Cellblock 13](https://www.eagleleather.com.au/popular-brands/cellblock-13)
+- [CleanStream](https://www.eagleleather.com.au/popular-brands/cleanstream)
+- [Crackstuffers](https://www.eagleleather.com.au/popular-brands/crackstuffers)
+- [E-Stim Systems](https://www.eagleleather.com.au/popular-brands/e-stim-systems)
+- [Eagle Leather](https://www.eagleleather.com.au/popular-brands/eagle-leather)
+- [FFausten](https://www.eagleleather.com.au/popular-brands/ffausten)
+- [Fleshlight](https://www.eagleleather.com.au/popular-brands/fleshlight)
+- [Friend of Dorothy](https://www.eagleleather.com.au/popular-brands/friend-of-dorothy)
+- [Friendly Toys](https://www.eagleleather.com.au/popular-brands/friendly-toys)
+- [Gangbangster](https://www.eagleleather.com.au/popular-brands/gangbangster)
+- [HiSmith](https://www.eagleleather.com.au/popular-brands/hismith)
+- [LA Pumps](https://www.eagleleather.com.au/popular-brands/la-pumps)
+- [Libidex](https://www.eagleleather.com.au/popular-brands/libidex)
+- [Mister B](https://www.eagleleather.com.au/popular-brands/mister-b)
+- [MR. Riegillio](https://www.eagleleather.com.au/popular-brands/mr-riegillio)
+- [Nightmare in Wax](https://www.eagleleather.com.au/popular-brands/nightmare-in-wax)
+- [Oxballs](https://www.eagleleather.com.au/popular-brands/oxballs)
+- [Polymorphe](https://www.eagleleather.com.au/popular-brands/polymorphe)
+- [Satisfyer](https://www.eagleleather.com.au/popular-brands/satisfyer)
+- [Sinnovator](https://www.eagleleather.com.au/popular-brands/sinnovator)
+- [Spartacus](https://www.eagleleather.com.au/popular-brands/spartacus)
+- [Sport Fucker](https://www.eagleleather.com.au/popular-brands/sport-fucker)
+- [SquarePegToys®](https://www.eagleleather.com.au/popular-brands/squarepegtoys)
+- [Swiss Navy](https://www.eagleleather.com.au/popular-brands/swiss-navy)
+- [Tenga](https://www.eagleleather.com.au/popular-brands/tenga)
+- [Uncover Creations](https://www.eagleleather.com.au/popular-brands/uncover-creations)
+- [Vac-U-Lock](https://www.eagleleather.com.au/popular-brands/vac-u-lock)
+- [Vivishine](https://www.eagleleather.com.au/popular-brands/vivishine)
+- [Weredog](https://www.eagleleather.com.au/popular-brands/weredog)
+
+## Toys & Gear
+
+- [Toys & Gear](https://www.eagleleather.com.au/toys-gear)
+- [Bondage & Discipline](https://www.eagleleather.com.au/toys-gear/bondage-and-discipline)
+- [Canes & Crops](https://www.eagleleather.com.au/toys-gear/bondage-and-discipline/canes-and-crops)
+- [Collars & Leads](https://www.eagleleather.com.au/toys-gear/bondage-and-discipline/collars-and-leads)
+- [Blindfolds & Gags](https://www.eagleleather.com.au/toys-gear/bondage-and-discipline/gags)
+- [Head Harnesses & Hoods](https://www.eagleleather.com.au/toys-gear/bondage-and-discipline/head-harnesses-and-hoods)
+- [Paddles & Straps](https://www.eagleleather.com.au/toys-gear/bondage-and-discipline/paddles-straps)
+- [Restraints](https://www.eagleleather.com.au/toys-gear/bondage-and-discipline/restraints)
+- [Rope & Accessories](https://www.eagleleather.com.au/toys-gear/bondage-and-discipline/rope-and-accessories)
+- [Wax & Sensation Play](https://www.eagleleather.com.au/toys-gear/bondage-and-discipline/wax-and-sensation-play)
+- [Whips & Floggers](https://www.eagleleather.com.au/toys-gear/bondage-and-discipline/whips-and-floggers)
+- [Cock & Ball Toys](https://www.eagleleather.com.au/toys-gear/cock-ball-toys)
+- [Ball Stretchers](https://www.eagleleather.com.au/toys-gear/cock-ball-toys/ball-stretchers)
+- [Ball Weights](https://www.eagleleather.com.au/toys-gear/cock-ball-toys/ball-weights)
+- [Chastity Devices](https://www.eagleleather.com.au/toys-gear/cock-ball-toys/chastity-devices)
+- [Cock Rings & Straps](https://www.eagleleather.com.au/toys-gear/cock-ball-toys/cock-rings-and-straps)
+- [Masturbators](https://www.eagleleather.com.au/toys-gear/cock-ball-toys/masturbators)
+- [Penile Insertion](https://www.eagleleather.com.au/toys-gear/cock-ball-toys/penile-insertion)
+- [Sheaths & Extenders](https://www.eagleleather.com.au/toys-gear/cock-ball-toys/sheaths)
+- [Dildos & Butt Toys](https://www.eagleleather.com.au/toys-gear/dildos-butt-toys)
+- [Anal Vibrators](https://www.eagleleather.com.au/toys-gear/dildos-butt-toys/anal-vibrators)
+- [Butt Plugs & Toys](https://www.eagleleather.com.au/toys-gear/dildos-butt-toys/butt-plugs-toys)
+- [Depth Play](https://www.eagleleather.com.au/toys-gear/dildos-butt-toys/depth-play)
+- [Dildo Accessories](https://www.eagleleather.com.au/toys-gear/dildos-butt-toys/dildo-accessories)
+- [Dildos](https://www.eagleleather.com.au/toys-gear/dildos-butt-toys/dildos)
+- [Double Ended Dildos](https://www.eagleleather.com.au/toys-gear/dildos-butt-toys/double-ended-dildos)
+- [Inflatable](https://www.eagleleather.com.au/toys-gear/dildos-butt-toys/inflatable)
+- [Prostate Massagers](https://www.eagleleather.com.au/toys-gear/dildos-butt-toys/prostate-massagers)
+- [Realistic Dildos](https://www.eagleleather.com.au/toys-gear/dildos-butt-toys/realistic-dildos)
+- [Strap On](https://www.eagleleather.com.au/toys-gear/dildos-butt-toys/strap-on)
+- [Electric Sex](https://www.eagleleather.com.au/toys-gear/electric-sex)
+- [Cables & Adaptors](https://www.eagleleather.com.au/toys-gear/electric-sex/cables-adaptors)
+- [Control Boxes](https://www.eagleleather.com.au/toys-gear/electric-sex/control-boxes)
+- [Electrode Gel](https://www.eagleleather.com.au/toys-gear/electric-sex/electrode-gel)
+- [Insertables](https://www.eagleleather.com.au/toys-gear/electric-sex/insertables)
+- [Skin Play](https://www.eagleleather.com.au/toys-gear/electric-sex/skin-play)
+- [Fantasy & Pet Play Gear](https://www.eagleleather.com.au/toys-gear/fantasy-pet-play-gear)
+- [Fantasy & Pet Play Accessories](https://www.eagleleather.com.au/toys-gear/fantasy-pet-play-gear/accessories)
+- [Creature & Fantasy Dildos](https://www.eagleleather.com.au/toys-gear/fantasy-pet-play-gear/creature-fantasy-dildos)
+- [Hoods & Masks](https://www.eagleleather.com.au/toys-gear/fantasy-pet-play-gear/hoods)
+- [Pup Play](https://www.eagleleather.com.au/toys-gear/fantasy-pet-play-gear/pup-play)
+- [Tails](https://www.eagleleather.com.au/toys-gear/fantasy-pet-play-gear/tails)
+- [Gender Expression & Play](https://www.eagleleather.com.au/toys-gear/gender-expression-play)
+- [High Tech Toys](https://www.eagleleather.com.au/toys-gear/high-tech-toys)
+- [Bluetooth Devices](https://www.eagleleather.com.au/toys-gear/high-tech-toys/bluetooth-devices)
+- [Magazines & Books](https://www.eagleleather.com.au/toys-gear/magazines)
+- [Medical Toys](https://www.eagleleather.com.au/toys-gear/medical-toys)
+- [Gloves](https://www.eagleleather.com.au/toys-gear/medical-toys/gloves)
+- [Hygiene Products](https://www.eagleleather.com.au/toys-gear/medical-toys/hygiene-products)
+- [Peehole Insertion](https://www.eagleleather.com.au/toys-gear/medical-toys/peehole-insertion)
+- [Speculum](https://www.eagleleather.com.au/toys-gear/medical-toys/speculum)
+- [Sterile Lubes](https://www.eagleleather.com.au/toys-gear/medical-toys/sterile-lubes)
+- [Stimulation](https://www.eagleleather.com.au/toys-gear/medical-toys/stimulation)
+- [Nipple Toys](https://www.eagleleather.com.au/toys-gear/nipple-toys)
+- [Clamps](https://www.eagleleather.com.au/toys-gear/nipple-toys/clamps)
+- [Suction](https://www.eagleleather.com.au/toys-gear/nipple-toys/suction)
+- [Weights](https://www.eagleleather.com.au/toys-gear/nipple-toys/weights)
+- [Play Equipment](https://www.eagleleather.com.au/toys-gear/play-equipment-and-gear)
+- [Bed Sheets & Covers](https://www.eagleleather.com.au/toys-gear/play-equipment-and-gear/bedding-sheets-covers)
+- [Fucking Machines](https://www.eagleleather.com.au/toys-gear/play-equipment-and-gear/fucking-machines)
+- [Playroom Accessories](https://www.eagleleather.com.au/toys-gear/play-equipment-and-gear/playroom-accessories)
+- [Pumping](https://www.eagleleather.com.au/toys-gear/pumping)
+- [Pumping Accessories](https://www.eagleleather.com.au/toys-gear/pumping/pumping-accessories)
+- [Cylinders](https://www.eagleleather.com.au/toys-gear/pumping/pumping-cylinders)
+- [Pumps](https://www.eagleleather.com.au/toys-gear/pumping/pumps)
+- [Vaginal Toys](https://www.eagleleather.com.au/toys-gear/vaginal-toys)
+- [Grinders](https://www.eagleleather.com.au/toys-gear/vaginal-toys/grinders)
+- [Vibrators & Accessories](https://www.eagleleather.com.au/toys-gear/vibrators-and-accessories)
+- [Vibrating Wands](https://www.eagleleather.com.au/toys-gear/vibrators-and-accessories/vibrating-wands)
+
+## Clothing
+
+- [Apparel](https://www.eagleleather.com.au/clothing/apparel)
+- [Apparel Accessories](https://www.eagleleather.com.au/clothing/apparel/apparel-accessories)
+- [Apparel Harnesses](https://www.eagleleather.com.au/clothing/apparel/harnesses)
+- [Apparel Shorts](https://www.eagleleather.com.au/clothing/apparel/shorts)
+- [Socks](https://www.eagleleather.com.au/clothing/apparel/socks)
+- [Tops](https://www.eagleleather.com.au/clothing/apparel/tops)
+- [Wrestlers](https://www.eagleleather.com.au/clothing/apparel/wrestlers)
+- [Head Gear](https://www.eagleleather.com.au/clothing/head-gear)
+- [Head Gear Accessories](https://www.eagleleather.com.au/clothing/head-gear/accessories)
+- [Caps](https://www.eagleleather.com.au/clothing/head-gear/caps)
+- [Gas Masks](https://www.eagleleather.com.au/clothing/head-gear/gas-masks)
+- [Head Harnesses](https://www.eagleleather.com.au/clothing/head-gear/head-harnesses)
+- [Hoods](https://www.eagleleather.com.au/clothing/head-gear/hoods)
+- [Underwear](https://www.eagleleather.com.au/clothing/underwear)
+- [Briefs](https://www.eagleleather.com.au/clothing/underwear/briefs)
+- [G-Strings & Thongs](https://www.eagleleather.com.au/clothing/underwear/g-strings)
+- [Jocks](https://www.eagleleather.com.au/clothing/underwear/jocks)
+- [Underwear Shorts](https://www.eagleleather.com.au/clothing/underwear/underwear-shorts)
+
+## Contact
+
+- Email: sales@eagleleather.com.au
+- Site: https://www.eagleleather.com.au

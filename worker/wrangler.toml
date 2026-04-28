@@ -1,0 +1,29 @@
+"$schema" = "../node_modules/wrangler/config-schema.json"
+name = "eagleleather-llms-router"
+main = "src/index.ts"
+compatibility_date = "2026-04-24"
+
+# Bind only these paths on the apex. Everything else continues to the Magento origin untouched.
+routes = [
+  { pattern = "eagleleather.com.au/llms.txt", zone_name = "eagleleather.com.au" },
+  { pattern = "eagleleather.com.au/llms-full.txt", zone_name = "eagleleather.com.au" },
+  { pattern = "eagleleather.com.au/security.txt", zone_name = "eagleleather.com.au" },
+  { pattern = "eagleleather.com.au/.well-known/security.txt", zone_name = "eagleleather.com.au" },
+  { pattern = "www.eagleleather.com.au/llms.txt", zone_name = "eagleleather.com.au" },
+  { pattern = "www.eagleleather.com.au/llms-full.txt", zone_name = "eagleleather.com.au" },
+  { pattern = "www.eagleleather.com.au/security.txt", zone_name = "eagleleather.com.au" },
+  { pattern = "www.eagleleather.com.au/.well-known/security.txt", zone_name = "eagleleather.com.au" },
+]
+
+# FEED_BASE, REFRESH_TOKEN, PURGE_API_TOKEN, PURGE_ZONE_ID are all set as Worker secrets
+# (see README §Setup). For local dev, copy worker/.dev.vars.example → worker/.dev.vars
+# and fill in the values; .dev.vars is gitignored.
+
+# Bundle llms.txt directly into the Worker as a string module.
+[[rules]]
+type = "Text"
+globs = ["**/*.txt"]
+fallthrough = true
+
+[observability]
+enabled = true
