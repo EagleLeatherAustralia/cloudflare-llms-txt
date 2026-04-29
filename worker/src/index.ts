@@ -1,5 +1,6 @@
 import llmsTxt from "../../llms.txt";
 import securityTxt from "../../security.txt";
+import { buildMcpHandler } from "./mcp";
 
 interface Env {
   FEED_BASE: string;
@@ -8,6 +9,20 @@ interface Env {
   REFRESH_TOKEN?: string;
   PURGE_API_TOKEN?: string;
   PURGE_ZONE_ID?: string;
+}
+
+const DISCOVERY_LINK =
+  '<https://www.eagleleather.com.au/mcp>; rel="mcp-server", </llms-full.txt>; rel="describedby"; type="text/plain"';
+
+function preferMarkdown(request: Request): boolean {
+  const accept = request.headers.get("accept") ?? "";
+  return /\btext\/markdown\b/i.test(accept);
+}
+
+function textContentType(request: Request): string {
+  return preferMarkdown(request)
+    ? "text/markdown; charset=utf-8"
+    : "text/plain; charset=utf-8";
 }
 
 const PURGE_URLS = [
@@ -22,7 +37,7 @@ const PURGE_URLS = [
 ];
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
     // Refresh trigger: header survives the apex→www redirect (Cloudflare
@@ -34,13 +49,36 @@ export default {
       return handleRefresh(headerToken ?? queryToken ?? "", env);
     }
 
+    if (url.pathname === "/mcp") {
+      return buildMcpHandler(env.FEED_BASE)(request, env, ctx);
+    }
+
+    if (url.pathname === "/.well-known/mcp/server-card.json") {
+      const card = {
+        serverInfo: { name: "eagle-leather", version: "1.0.0" },
+        transport: { type: "streamable-http", endpoint: "https://www.eagleleather.com.au/mcp" },
+        capabilities: { tools: ["search_products", "get_product", "check_stock", "list_categories", "list_brands"] },
+        documentation: "https://www.eagleleather.com.au/llms.txt",
+      };
+      return new Response(JSON.stringify(card, null, 2) + "\n", {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Cache-Control": "public, max-age=86400",
+          "X-Served-By": "cloudflare-llm-txt-worker",
+        },
+      });
+    }
+
     if (url.pathname === "/llms.txt") {
       return new Response(llmsTxt, {
         status: 200,
         headers: {
-          "Content-Type": "text/plain; charset=utf-8",
+          "Content-Type": textContentType(request),
           "Cache-Control": "public, max-age=3600",
           "X-Served-By": "cloudflare-llm-txt-worker",
+          Link: DISCOVERY_LINK,
+          Vary: "Accept",
         },
       });
     }
@@ -66,8 +104,10 @@ export default {
       });
 
       const headers = new Headers(response.headers);
-      headers.set("Content-Type", "text/plain; charset=utf-8");
+      headers.set("Content-Type", textContentType(request));
       headers.set("X-Served-By", "cloudflare-llm-txt-worker");
+      headers.set("Link", DISCOVERY_LINK);
+      headers.set("Vary", "Accept");
 
       return new Response(response.body, {
         status: response.status,

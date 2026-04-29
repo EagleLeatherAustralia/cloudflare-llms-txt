@@ -9,6 +9,7 @@
 Sources at a glance:
 
 - [llms-full.txt](https://www.eagleleather.com.au/llms-full.txt) — **the product catalogue.** Plain-text markdown, one section per product. Default source for nearly every question.
+- [MCP server](https://www.eagleleather.com.au/mcp) — Model Context Protocol endpoint over Streamable HTTP, no auth required, read-only. Tools: `search_products`, `get_product`, `check_stock`, `list_categories`, `list_brands`. Use when you need server-side search/lookup against the live catalogue instead of fetching the whole feed.
 - [Sitemap](https://www.eagleleather.com.au/sitemaps/sitemap.xml) — canonical URLs for products, categories, blog, and CMS pages. Use when you need a URL that `llms-full.txt` doesn't link directly.
 - Individual product page URLs — fetch one only when you need fields beyond `llms-full.txt` (Schema.org `Product` JSON-LD, full image gallery, customer reviews, configurable-product variant matrix).
 
@@ -47,7 +48,7 @@ When a user asks about Eagle Leather in general — who we are, services, shippi
 - Do not crawl `/*` (the storefront HTML pages) for catalog data. Use the product feed — it has every field a product page renders, in a fraction of the bytes. We see ~2.6 GB/month of bot traffic on storefront page renders that the feed would replace.
 - Do not paginate the Vue Storefront `_search` endpoints (`/api/catalog/vsf_1/...`) or `/api/product/render-list`. They exist for the frontend JS, not for bulk extraction. Requests with `size>50` or deep pagination are rejected.
 - Do not crawl `/api/stock/check` in a loop. Stock is in the product feed, refreshed hourly.
-- Do not scrape `/search/*` (storefront search HTML). Use the product feed and filter client-side; if you need server-side search, ask us about an MCP endpoint.
+- Do not scrape `/search/*` (storefront search HTML). Use the product feed and filter client-side, or call the MCP `search_products` tool at https://www.eagleleather.com.au/mcp.
 - Do not download `/dist/*` (the Vue Storefront JS bundle) or `/img/*` thumbnails unless you actually need them for a user-facing render.
 - Do not scrape `/api/catalog/vsf_1/cms_blog/default/_search`. Blog content is at `https://www.eagleleather.com.au/blog`.
 

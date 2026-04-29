@@ -7,11 +7,21 @@
     "deploy": "bash scripts/deploy.sh",
     "deploy:keep-token": "wrangler deploy --config worker/wrangler.toml",
     "dev": "wrangler dev --config worker/wrangler.toml --port 8787",
-    "tail": "wrangler tail --config worker/wrangler.toml"
+    "tail": "wrangler tail --config worker/wrangler.toml",
+    "test": "vitest run --config worker/vitest.config.ts",
+    "test:watch": "vitest --config worker/vitest.config.ts",
+    "typecheck": "tsc --noEmit -p worker/tsconfig.json"
   },
   "devDependencies": {
-    "wrangler": "^4.0.0",
     "@cloudflare/workers-types": "^4.20260101.0",
-    "typescript": "^5.6.0"
+    "@vitest/ui": "^4.1.5",
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.5",
+    "wrangler": "^4.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "agents": "^0.11.9",
+    "zod": "^4.3.6"
   }
 }

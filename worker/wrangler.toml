@@ -2,6 +2,7 @@
 name = "eagleleather-llms-router"
 main = "src/index.ts"
 compatibility_date = "2026-04-24"
+compatibility_flags = ["nodejs_compat"]
 
 # Bind only these paths on the apex. Everything else continues to the Magento origin untouched.
 routes = [
@@ -9,10 +10,14 @@ routes = [
   { pattern = "eagleleather.com.au/llms-full.txt", zone_name = "eagleleather.com.au" },
   { pattern = "eagleleather.com.au/security.txt", zone_name = "eagleleather.com.au" },
   { pattern = "eagleleather.com.au/.well-known/security.txt", zone_name = "eagleleather.com.au" },
+  { pattern = "eagleleather.com.au/mcp", zone_name = "eagleleather.com.au" },
+  { pattern = "eagleleather.com.au/.well-known/mcp/server-card.json", zone_name = "eagleleather.com.au" },
   { pattern = "www.eagleleather.com.au/llms.txt", zone_name = "eagleleather.com.au" },
   { pattern = "www.eagleleather.com.au/llms-full.txt", zone_name = "eagleleather.com.au" },
   { pattern = "www.eagleleather.com.au/security.txt", zone_name = "eagleleather.com.au" },
   { pattern = "www.eagleleather.com.au/.well-known/security.txt", zone_name = "eagleleather.com.au" },
+  { pattern = "www.eagleleather.com.au/mcp", zone_name = "eagleleather.com.au" },
+  { pattern = "www.eagleleather.com.au/.well-known/mcp/server-card.json", zone_name = "eagleleather.com.au" },
 ]
 
 # FEED_BASE, REFRESH_TOKEN, PURGE_API_TOKEN, PURGE_ZONE_ID are all set as Worker secrets
@@ -27,3 +32,11 @@ fallthrough = true
 
 [observability]
 enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+invocation_logs = true
+
+[observability.traces]
+enabled = true
+head_sampling_rate = 0.1

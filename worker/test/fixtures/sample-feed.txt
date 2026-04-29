@@ -1,0 +1,82 @@
+# Eagle Leather Product Catalog
+
+Site: https://www.eagleleather.com.au
+Currency: AUD
+
+---
+
+## Latex Combi Hood
+
+- SKU: 40023
+- URL: https://www.eagleleather.com.au/latex-combi-hood-blackstyle.html
+- Brand: Blackstyle
+- Price: A$625.00
+- Stock: out of stock
+- Categories: Clothing, Head Gear, Hoods; Clothing, Latex, Hoods & Masks
+- Color: Black
+- Image: https://admin.eagleleather.com.au/media/catalog/product/l/a/latex_combi.jpg
+
+One of the most deluxe hoods on the market, made in Germany from 0.9mm rubber.
+
+**Features:**
+
+- Heavy-duty back zipper
+
+- Detachable blindfold
+
+---
+
+## Sale Item
+
+- SKU: SALE-1
+- URL: https://www.eagleleather.com.au/sale-item.html
+- Brand: Oxballs
+- Price: A$76.30 (was A$109.00)
+- Stock: in stock
+- Categories: Toys & Gear, Cock & Ball Toys
+- Color: Red
+- Image: https://example.com/img.png
+
+A discounted item for testing sale prices.
+
+---
+
+## Configurable Range
+
+- SKU: CFG-1
+- URL: https://www.eagleleather.com.au/cfg.html
+- Brand: Mister B
+- Price: A$99.00–A$129.00
+- Stock: in stock
+- Categories: Clothing, Apparel, Pants
+- Image: https://example.com/cfg.png
+
+A configurable product with size variants.
+
+---
+
+## Pig Ring
+
+- SKU: PIG-RING
+- GTIN: 840215105493
+- URL: https://www.eagleleather.com.au/pig-ring.html
+- Brand: Oxballs
+- Price: A$55.00
+- Stock: in stock
+- Categories: Toys & Gear, Cock & Ball Toys, Cock Rings & Straps; Popular Brands, Oxballs
+- Image: https://example.com/pig.png
+
+PIG-RING is a pure silicone cockring designed for comfort.
+
+---
+
+## Missing Required Field
+
+- SKU: BAD-1
+- URL: https://example.com/bad.html
+- Brand: Test
+- Categories: Test
+
+This product is missing Price and Stock — should be skipped by the parser.
+
+---
